@@ -1,0 +1,26 @@
+/vendor
+/.idea
+Homestead.json
+Homestead.yaml
+.env
+.env_prod
+.phpunit.result.cache
+
+# Visual Studio Code
+.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+/public/avatars/*

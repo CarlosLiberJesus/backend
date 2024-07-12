@@ -1,0 +1,13 @@
+<?php
+if (!function_exists('app_path')) {
+    /**
+     * Get the path to the application folder.
+     *
+     * @param  string $path
+     * @return string
+     */
+    function app_path($path = '')
+    {
+        return __DIR__.($path ? DIRECTORY_SEPARATOR.$path : $path);
+    }
+}
