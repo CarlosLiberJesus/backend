@@ -37,7 +37,7 @@ class Authenticate
     {
         if ($this->auth->guard($guard)->guest()) {
             return response()->json([
-                'message' => 'MIDDLEWARE.401',
+                'message' => 'Middleware Authenticate',
             ], 401);
         } else {
             return $next($request);

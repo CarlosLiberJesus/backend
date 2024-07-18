@@ -30,4 +30,19 @@ class UserProfile extends Model
         return $this->belongsTo(Status::class, 'status_id');
     }
 
+    public function freguesia()
+    {
+        return $this->belongsTo(Freguesia::class, 'freguesia_id');
+    }
+
+    public function concelho()
+    {
+        return $this->belongsTo(Concelho::class, 'concelho_id');
+    }
+
+    public function distrito()
+    {
+        return $this->belongsTo(Concelho::class, 'concelho_id');
+    }
+
 }

@@ -15,13 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('uuid')->unique()->index();
             $table->unsignedBigInteger('app_id');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('name');
             $table->string('password');
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
 
+            $table->unique(['app_id', 'email']);
             $table->foreign('app_id')->references('id')->on('applications');
         });
     }

@@ -18,9 +18,9 @@ class UserPermissions extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function permissions()
+    public function permission()
     {
-        return $this->hasMany(Permission::class, 'permission_id');
+        return $this->belongsTo(Permission::class, 'permission_id');
     }
 
 }

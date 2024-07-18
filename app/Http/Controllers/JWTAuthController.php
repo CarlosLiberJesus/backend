@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -24,51 +25,74 @@ class JWTAuthController extends Controller
     public function login(Request $request)
     {
 
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string',
-            'password' => 'required|string',
-        ]);
-        if ($validator->fails()) {
+        try {
+            $application = Application::where('uuid', $request->header('App-Uuid'))->first();
+            //middleware já deveria ter apanhado, não custa
+            if(!$application) {
+                return response()->json([
+                    'message' => 'Não foi entregue nenhuma app_key',
+                ], 422); // Unprocessable Entity
+            }
+
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|string',
+                'password' => 'required|string',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Não foram entregues os campos obrigatórios',
+                    'errors' => $validator->errors(),
+                ], 422); // Unprocessable Entity
+            }
+
+            $credentials = $request->only(['email', 'password']);
+            $credentials['app_id'] = $application->id;
+
+            if (!$token = Auth::attempt($credentials)) {
+                return response()->json([
+                    'message' => 'Utilizador inválido',
+                ], 401);
+            }
+
+            $user = Auth::user();
+            if (!$user) {
+                auth()->logout();
+                return response()->json([
+                    'message' => 'Utilizador não encontrado',
+                ], 401);
+            }
+            $profile = $user ? $user->profile : null;
+
+            if (!$profile) {
+                auth()->logout();
+                return response()->json([
+                    'message' => 'Utilizador sem perfil',
+                ], 401);
+            }
+
+            if ($profile->status->id !== 1) {
+                auth()->logout();
+                // TODO case we want to do more stuff :) add logs
+                $status = Status::where('id', $profile->status->id)->first();
+                return response()->json([
+                    'message' => 'Utilizador tem perfil inativo',
+                    'errors' => 'Perfil actual: ' . $status->name,
+                ], 401);
+            }
+
+            $user->touch();
+            return $this->jsonResponse($token);
+        } catch (\Exception $e) {
+            $reply = [
+                'message' => $e->getMessage(),
+                'file' => basename($e->getFile()),
+                'line' => $e->getLine(),
+            ];
             return response()->json([
-                'message' => 'USER.VALIDATION.FAILURE',
-                'errors' => $validator->errors(),
-            ], 422); // Unprocessable Entity
+                'message' => 'Erro interno',
+                'errors' => $reply,
+            ], 500);
         }
-
-        $credentials = $request->only(['email', 'password']);
-
-        if (!$token = Auth::attempt($credentials)) {
-            return response()->json([
-                'message' => 'USER.INVALID',
-            ], 401);
-        }
-
-        $user = Auth::user();
-        if (!$user) {
-            auth()->logout();
-            return response()->json([
-                'message' => 'USER.NOT_FOUND',
-            ], 401);
-        }
-
-        $profile = $user->profiles()->where('app_id', Application::where('uuid',$request->header('APP_UUID'))->first()->id)->first();
-        if (!$profile) {
-            auth()->logout();
-            return response()->json([
-                'message' => 'USER.PROFILE.NOT_FOUND',
-            ], 401);
-        }
-
-        if ($profile->status->id !== 1) {
-            auth()->logout();
-            // TODO case we want to do more stuff :) add logs
-            return response()->json([
-                'message' => 'USER.PROFILE.NOT_ACTIVE',
-            ], 401);
-        }
-
-        $user->touch();
-        return $this->jsonResponse($token);
     }
 
      /**
@@ -86,13 +110,28 @@ class JWTAuthController extends Controller
                 ], 401);
             }
 
-            $profile = $user->profiles()->where('app_id', Application::where('uuid',$request->header('APP_UUID'))->first()->id)->first();
+            $profile = $user ? $user->profile : null;
             if (!$profile) {
                 return response()->json([
                     'message' => 'USER.PROFILE.NOT_FOUND',
                 ], 401);
             }
             $nameParts = explode(" ", $user->name);
+            $roles = $user->roles()->with('role')->get()->map(function ($role) {
+                return [
+                    'uuid' => $role->role->uuid,
+                    'code' => $role->role->code,
+                    'name' => $role->role->name
+                ];
+            });
+
+            $permissions = $user->permissions()->with('permission')->get()->map(function ($permission) {
+                return [
+                    'uuid' => $permission->permission->uuid,
+                    'code' => $permission->permission->code,
+                    'name' => $permission->permission->name
+                ];
+            });
 
             return response()->json([
                 "uuid" => $user->uuid,
@@ -101,10 +140,9 @@ class JWTAuthController extends Controller
                 "firstname" => $nameParts[0],
                 "lastname" => sizeof($nameParts) > 1 ? end($nameParts) : '',
                 "profile" =>  [
-                        'app_uuid' => $profile->app->uuid,
-                        'role' => [
-                            'color' => $profile->role->color,
-                            'name' => $profile->role->name
+                        'freguesia' => [
+                            'uuid' => $profile->freguesia->uuid,
+                            'name' => $profile->freguesia->name
                         ],
                         'status' => [
                             'color' => $profile->status->color,
@@ -113,8 +151,9 @@ class JWTAuthController extends Controller
                         'rating' => $profile->rating,
                         'avatar' => $profile->avatar ? @base64_encode(file_get_contents(app_path('../public/avatars/'.$profile->avatar))) : null,
                         'rgbd' => $profile->rgbd,
-                        'permissions' => [],
                     ],
+                    'roles' => $roles,
+                    'permissions' => $permissions,
                 "lastLogin" => $profile->status->id !== 2 ? $user->updated_at->toIso8601String() : null,
                 "details" => $user->detail,
             ], 200);
@@ -137,7 +176,7 @@ class JWTAuthController extends Controller
     {
         auth()->logout();
 
-        return response()->json(['message' => "LOGOUT"], 200);
+        return response()->json(['message' => "Sessão encerrada"], 200);
     }
 
     /**
@@ -150,7 +189,7 @@ class JWTAuthController extends Controller
         $user = Auth::user();
         if (!$user) {
             return response()->json([
-                'message' => 'USER.FAILURE',
+                'message' => 'Erro a validar sessão do utilizador',
             ], 401);
         }
 
