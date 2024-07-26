@@ -121,6 +121,7 @@ class JWTAuthController extends Controller
                 return [
                     'uuid' => $role->role->uuid,
                     'code' => $role->role->code,
+                    'color' => $role->role->color,
                     'name' => $role->role->name
                 ];
             });
@@ -140,9 +141,19 @@ class JWTAuthController extends Controller
                 "firstname" => $nameParts[0],
                 "lastname" => sizeof($nameParts) > 1 ? end($nameParts) : '',
                 "profile" =>  [
-                        'freguesia' => [
-                            'uuid' => $profile->freguesia->uuid,
-                            'name' => $profile->freguesia->name
+                        'location' => [
+                            'distrito' => [
+                            'uuid' => $profile->freguesia->distrito->uuid,
+                            'name' => $profile->freguesia->distrito->name,
+                            'concelho' => [
+                                'uuid' => $profile->freguesia->concelho->uuid,
+                                'name' => $profile->freguesia->concelho->name,
+                                'freguesia' => [
+                                    'uuid' => $profile->freguesia->uuid,
+                                    'name' => $profile->freguesia->name
+                                ]
+                            ]
+                        ]
                         ],
                         'status' => [
                             'color' => $profile->status->color,

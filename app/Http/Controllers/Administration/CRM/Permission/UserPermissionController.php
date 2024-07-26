@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Administration\CRM\Role;
+namespace App\Http\Controllers\Administration\CRM\Permission;
 
 use App\Http\Controllers\Controller;
-use App\Models\Application;
-use App\Models\Role;
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class UserRoleController extends Controller
+class UserPermissionController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -50,21 +49,20 @@ class UserRoleController extends Controller
                 ], 401);
             }
 
-            $roles = Role::all();
+            $permissions = Permission::all();
 
-            $formatedRoles = [];
-            foreach ($roles as &$role) {
-                array_push($formatedRoles, [
-                    "uuid" => $role->uuid,
-                    "name" => $role->name,
-                    "color" => $role->color,
-                    "code" => $role->code,
-                    "description" => $role->description
+            $formatedPermissions = [];
+            foreach ($permissions as &$permission) {
+                array_push($formatedPermissions, [
+                    "uuid" => $permission->uuid,
+                    "name" => $permission->name,
+                    "code" => $permission->code,
+                    "description" => $permission->description
                 ]);
             }
 
             return response()->json([
-                'roles' => $formatedRoles
+                'permissions' => $formatedPermissions
             ], 200);
 
         } catch (\Throwable $th) {

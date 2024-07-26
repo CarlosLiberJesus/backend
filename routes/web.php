@@ -30,6 +30,14 @@ $router->group(['prefix' => '/api'], function () use ($router) {
         $router->post('/logout', ['as' => 'auth.logout', 'uses' => 'JWTAuthController@logout']);
     });
 
+    $router->group(['prefix' => '/location', 'namespace' => 'UserLocation'], function () use ($router) {
+        $router->post('/distrito/get-all', ['as' => 'location.distrito', 'uses' => 'Distrito\DistritoController@list']);
+        $router->post('/distrito/dump', ['as' => 'location.distrito', 'uses' => 'Distrito\DistritoController@dump']);
+
+        $router->post('/concelho/get-all', ['as' => 'location.concelho', 'uses' => 'Concelho\ConcelhoController@list']);
+        $router->post('/freguesia/get-all', ['as' => 'location.freguesia', 'uses' => 'Freguesia\FreguesiaController@list']);
+    });
+
     $router->group(['prefix' => '/users', 'namespace' => 'Administration\CRM', 'middleware' => 'auth'], function () use ($router) {
         $router->post('/get-all', ['as' => 'users.list', 'uses' => 'UserController@list']);
         $router->post('/get', ['as' => 'users.get', 'uses' => 'UserController@get']);

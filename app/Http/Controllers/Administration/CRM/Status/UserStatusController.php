@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Administration\CRM\Status;
 
 use App\Http\Controllers\Controller;
-use App\Models\Application;
-
 use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,20 +32,21 @@ class UserStatusController extends Controller
             $user = Auth::user();
             if (!$user) {
                 return response()->json([
-                    'message' => 'USER.VALIDATION.FAILURE',
+                    'message' => 'Utilizador não auntenticado',
                 ], 401);
             }
 
-            $profile = $user->profiles()->where('app_id', Application::where('uuid',$request->header('APP_UUID'))->first()->id)->first();
-            if (!$profile) {
+            //TODO ROLE NOT HERE
+            $roles = $user->roles()->get();
+            if (!$roles) {
                 return response()->json([
-                    'message' => 'USER.VALIDATION.FAILURE',
+                    'message' => 'Utilizador sem perfis',
                 ], 401);
             }
 
-            if (!in_array($profile->role->name, ['root'])) {
+            if (!in_array($roles->code, ['COMEL','PLTOP'])) {
                 return response()->json([
-                    'message' => 'USER.VALIDATION.FAILURE',
+                    'message' => 'Utilizador não tem perfil para aceder',
                 ], 401);
             }
 
@@ -59,6 +58,7 @@ class UserStatusController extends Controller
                     "uuid" => $status->uuid,
                     "name" => $status->name,
                     "color" => $status->color,
+                    "description" => $status->description,
                 ]);
             }
 

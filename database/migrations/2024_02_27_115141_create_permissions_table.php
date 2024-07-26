@@ -18,10 +18,8 @@ return new class extends Migration
             $table->string('uuid')->unique()->index();
             $table->string('code', 100);
             $table->string('name', 100);
-            $table->string('color', 10)->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
-
             $table->foreign('app_id')->references('id')->on('applications');
             $table->foreign('role_id')->references('id')->on('roles');
         });

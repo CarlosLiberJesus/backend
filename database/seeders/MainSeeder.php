@@ -18,11 +18,11 @@ class MainSeeder extends Seeder
         Application::create(['uuid' => '3d924b69-0063-4943-824a-0d5bb445e7ca', 'slug' => 'http://localhost:1234', 'name' => 'Api DEV']);
         Application::create(['uuid' => '22993c21-2e98-454f-a1df-8b8d9c5150c1', 'slug' => 'https://www.geracaoconsciente.pt/api/public', 'name' => 'Api QA']);
 
-        Status::create(['uuid' => Str::uuid(), 'name' => 'active', 'color' => 'success' ]);
-        Status::create(['uuid' => Str::uuid(), 'name' => 'registered', 'color' => 'warning' ]);
-        Status::create(['uuid' => Str::uuid(), 'name' => 'deleted', 'color' => 'dark' ]);
-        Status::create(['uuid' => Str::uuid(), 'name' => 'suspended', 'color' => 'danger' ]);
-        Status::create(['uuid' => Str::uuid(), 'name' => 'inactive', 'color' => 'light' ]);
+        Status::create(['uuid' => Str::uuid(), 'name' => 'Activo', 'color' => 'success' ]);
+        Status::create(['uuid' => Str::uuid(), 'name' => 'Registado', 'color' => 'warning' ]);
+        Status::create(['uuid' => Str::uuid(), 'name' => 'Apagado', 'color' => 'dark' ]);
+        Status::create(['uuid' => Str::uuid(), 'name' => 'Suspenso', 'color' => 'danger' ]);
+        Status::create(['uuid' => Str::uuid(), 'name' => 'Inactivo', 'color' => 'light' ]);
 
         Role::create(['uuid' => Str::uuid(), 'app_id' => 1, 'name' => 'Comissão Eleitural', 'code' => 'COMEL', 'description' => 'Ordem na distribuição dos outros Roles', 'color' => 'success']);
         Role::create(['uuid' => Str::uuid(), 'app_id' => 1, 'name' => 'Administração Partidária', 'code' => 'PLTOP', 'description' => 'Acesso a ferramentas de gestão do partido', 'color' => 'danger']);

@@ -37,7 +37,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['null'], //  TODO 'daily' remove null, if you dont gave any work
+            'channels' => ['daily'], //  TODO 'daily' remove null, if you dont gave any work
             'ignore_exceptions' => false,
         ],
 
