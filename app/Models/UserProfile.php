@@ -13,7 +13,17 @@ class UserProfile extends Model
      */
     protected $table = 'user_profiles';
 
-    protected $fillable = ['rating', 'rgbd', 'avatar'];
+    protected $fillable = ['rating', 'rgbd', 'avatar', 'freguesia_id', 'status_id', 'user_id'];
+
+    public function setFreguesiaIdAttribute($value)
+    {
+        if (!$this->freguesia_id) {
+            $freguesia = Freguesia::where('uuid', $value)->first();
+            if($freguesia) {
+                $this->attributes['freguesia_id'] = $freguesia->id;
+            }
+        }
+    }
 
     public function user()
     {

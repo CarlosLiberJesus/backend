@@ -38,6 +38,11 @@ $router->group(['prefix' => '/api'], function () use ($router) {
         $router->post('/freguesia/get-all', ['as' => 'location.freguesia', 'uses' => 'Freguesia\FreguesiaController@list']);
     });
 
+    $router->group(['prefix' => '/users', 'namespace' => 'Administration\CRM'], function () use ($router) {
+        $router->post('/check-mail', ['as' => 'users.mail-check', 'uses' => 'UserController@emailCheck']);
+        $router->post('/registar', ['as' => 'users.register', 'uses' => 'UserController@register']);
+    });
+
     $router->group(['prefix' => '/users', 'namespace' => 'Administration\CRM', 'middleware' => 'auth'], function () use ($router) {
         $router->post('/get-all', ['as' => 'users.list', 'uses' => 'UserController@list']);
         $router->post('/get', ['as' => 'users.get', 'uses' => 'UserController@get']);

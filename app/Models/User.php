@@ -20,7 +20,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var string[]
      */
     protected $fillable = [
-        'uuid', 'email', 'name',
+        'uuid', 'email', 'name', 'app_id', 'password',
     ];
 
     /**
@@ -59,6 +59,16 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function setAppIdAttribute($value)
+    {
+        if (!$this->app_id) {
+            $app = Application::where('uuid', $value)->first();
+            if ($app) {
+                $this->attributes['app_id'] = $app->id;
+            }
+        }
     }
 
     public function apps() {

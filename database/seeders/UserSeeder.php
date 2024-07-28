@@ -38,6 +38,7 @@ class UserSeeder extends Seeder
         //(new Avatar(include './config/laravolt/avatar.php'))->create('Carlos Jesus')->save($avatarPath.'ef8c398b-e3e5-41ca-b417-e76d4e6f5f1e.png');
         $fileName = 'ef8c398b-e3e5-41ca-b417-e76d4e6f5f1e.png';
         UserProfile::create(['user_id' => $user->id, 'status_id'=> 2, 'freguesia_id' => 1304, 'avatar' => $fileName]);
+        UserRoles::create(['user_id' => $user->id, 'role_id' => 8]);
 
          /*
         $faker = Faker::create();
