@@ -106,14 +106,14 @@ class JWTAuthController extends Controller
             $user = Auth::user();
             if (!$user) {
                 return response()->json([
-                    'message' => 'USER.FAILURE',
+                    'message' => 'Sessão não detectada. A Reinciar!',
                 ], 401);
             }
 
             $profile = $user ? $user->profile : null;
             if (!$profile) {
                 return response()->json([
-                    'message' => 'USER.PROFILE.NOT_FOUND',
+                    'message' => 'Perfil de utilizador autenticado inexistente',
                 ], 401);
             }
             $nameParts = explode(" ", $user->name);
